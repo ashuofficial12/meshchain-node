@@ -1,11 +1,12 @@
 const db = require('../config/connectDB'); // Adjust path if needed
-// const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 
 // Register User Function
 const register = async (req, res) => {
-    try {
+    console.log(req.body);
+    try {        
         const { name, phone, email, password, sponsor } = req.body;
 
         if (!name || !phone || !email || !password || !sponsor) {
@@ -13,7 +14,7 @@ const register = async (req, res) => {
         }
 
         // Check if user already exists
-        const [existingUser] = await db.promise().query(
+        const [existingUser] = await db.execute(
             "SELECT * FROM users WHERE email = ? OR phone = ?", [email, phone]
         );
         if (existingUser.length > 0) {
@@ -21,7 +22,7 @@ const register = async (req, res) => {
         }
 
         // Check if sponsor exists
-        const [sponsorUser] = await db.promise().query(
+        const [sponsorUser] = await db.execute(
             "SELECT * FROM users WHERE username = ?", [sponsor]
         );
         if (sponsorUser.length === 0) {
@@ -37,7 +38,7 @@ const register = async (req, res) => {
         const hashedTPassword = await bcrypt.hash(tpassword, 10);
 
         // Get parent ID
-        const [lastUser] = await db.promise().query("SELECT id FROM users ORDER BY id DESC LIMIT 1");
+        const [lastUser] = await db.execute("SELECT id FROM users ORDER BY id DESC LIMIT 1");
         const parentId = lastUser.length > 0 ? lastUser[0].id : null;
 
         // User data
@@ -56,7 +57,7 @@ const register = async (req, res) => {
         };
 
         // Insert new user
-        await db.promise().query("INSERT INTO users SET ?", newUser);
+        await db.execute("INSERT INTO users SET ?", newUser);
 
         return res.status(201).json({ message: "User registered successfully!", username });
 
@@ -73,6 +74,7 @@ const register = async (req, res) => {
 
 
 // Login User Function
+
 const login = async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -82,9 +84,7 @@ const login = async (req, res) => {
         }
 
         // Check if user exists
-        const [user] = await db.promise().query(
-            "SELECT * FROM users WHERE username = ?", [username]
-        );
+        const [user] = await db.execute("SELECT * FROM users WHERE username = ?", [username]);
 
         if (user.length === 0) {
             return res.status(400).json({ error: "User not found!" });
@@ -98,16 +98,25 @@ const login = async (req, res) => {
             return res.status(400).json({ error: "Invalid credentials!" });
         }
 
-        // Generate JWT token
-        const token = jwt.sign({ id: userData.id, username: userData.username }, "your_secret_key", { expiresIn: "1h" });
+        // Generate JWT token (Secret key should be in .env file)
+        const token = jwt.sign(
+            { id: userData.id, username: userData.username },
+            process.env.JWT_SECRET || "your_secret_key",  // Secret key from environment variables
+            { expiresIn: "1h" }
+        );
 
-        return res.status(200).json({ message: "Login successful!", username: userData.username, token });
+        return res.status(200).json({
+            message: "Login successful!",
+            token,  // Return token instead of storing username in localStorage
+        });
 
     } catch (error) {
         console.error("Error:", error.message);
         return res.status(500).json({ error: "Server error", details: error.message });
     }
 };
+
+
 
 
 

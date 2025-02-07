@@ -1,27 +1,28 @@
-const Income = require("models/Income"); 
+const db = require('../config/connectDB'); // Database connection
 
-const roi = async (req, res) => {
-  try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
+const income = async (req, res) => {
+    try {
+        // Username query params (for GET) or body (for POST) se le rahe hain
+        const username = req.query.username || req.body.username;
+
+        if (!username) {
+            return res.status(400).json({ error: "Username is required" });
+        }
+
+        // Fetch Direct Income of the logged-in user based on username
+        const [rows] = await db.query(
+            `SELECT incomes.user_id_fk, incomes.amt, incomes.comm, incomes.remarks, incomes.ttime, incomes.level
+            FROM incomes
+            JOIN users ON users.id = incomes.user_id_fk
+            WHERE incomes.remarks = 'Direct Income' AND users.username = ?`,
+            [username]
+        );
+
+        res.json(rows);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-    const userId = req.user.id; 
-
-    const incomes = await Income.findAll({
-      where: { user_id: userId, remarks: "roi" },  
-      order: [["created_at", "DESC"]],  
-    });
-
-    return res.json({ success: true, data: incomes });
-
-  } catch (error) {
-    console.error("Income Fetch Error:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "Error fetching ROI data", 
-      error: error.message 
-    });
-  }
 };
 
-module.exports = { roi }; // 
+module.exports = { income };
