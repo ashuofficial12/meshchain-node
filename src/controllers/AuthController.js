@@ -1,6 +1,6 @@
-const db = require('../config/connectDB'); // Adjust path if needed
-const jwt = require("jsonwebtoken");
+const db = require("../config/connectDB");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 
 // Register User Function
@@ -8,12 +8,11 @@ const register = async (req, res) => {
     console.log(req.body);
     try {        
         const { name, phone, email, password, sponsor } = req.body;
-
+        
         if (!name || !phone || !email || !password || !sponsor) {
             return res.status(400).json({ error: "All fields are required!" });
         }
 
-        // Check if user already exists
         const [existingUser] = await db.execute(
             "SELECT * FROM users WHERE email = ? OR phone = ?", [email, phone]
         );
@@ -21,7 +20,6 @@ const register = async (req, res) => {
             return res.status(400).json({ error: "Email or Phone already exists!" });
         }
 
-        // Check if sponsor exists
         const [sponsorUser] = await db.execute(
             "SELECT * FROM users WHERE username = ?", [sponsor]
         );
@@ -29,19 +27,19 @@ const register = async (req, res) => {
             return res.status(400).json({ error: "Sponsor does not exist!" });
         }
 
-        // Generate username & transaction password
         const username = Math.random().toString(36).substring(2, 10);
         const tpassword = Math.random().toString(36).substring(2, 8);
 
-        // Hash passwords
         const hashedPassword = await bcrypt.hash(password, 10);
         const hashedTPassword = await bcrypt.hash(tpassword, 10);
 
-        // Get parent ID
         const [lastUser] = await db.execute("SELECT id FROM users ORDER BY id DESC LIMIT 1");
         const parentId = lastUser.length > 0 ? lastUser[0].id : null;
 
-        // User data
+        const sponsorLevel = (sponsorUser[0].level !== undefined && sponsorUser[0].level !== null)
+            ? sponsorUser[0].level
+            : 0;
+
         const newUser = {
             name,
             phone,
@@ -52,11 +50,12 @@ const register = async (req, res) => {
             PSR: password,
             TPSR: tpassword,
             sponsor: sponsorUser[0].id,
-            level: sponsorUser[0].level + 1,
+            level: sponsorLevel + 1,  // Default to 0 if sponsor level is not defined, then add 1
             ParentId: parentId
         };
 
-        // Insert new user
+        console.log("New User Data:", newUser);
+
         await db.execute("INSERT INTO users SET ?", newUser);
 
         return res.status(201).json({ message: "User registered successfully!", username });
@@ -69,7 +68,6 @@ const register = async (req, res) => {
 
 
 
-// Export function
 
 
 
@@ -129,7 +127,7 @@ const logout = async (req, res) => {
     }
 };
 
-
+// module.exports = { logout };
 
 module.exports = { login, register, logout };
 
