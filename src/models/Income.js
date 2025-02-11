@@ -1,5 +1,6 @@
-
-const sequelize = require("../config/connectDB"); // ✅ Ensure this import is correct
+const { DataTypes } = require("sequelize");
+const env = require("../config/env"); 
+const sequelize = require("../config/database"); // ✅ Ensure this import is correct
 
  // Correct path
 const User = require("./User");
