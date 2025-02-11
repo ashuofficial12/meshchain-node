@@ -16,7 +16,10 @@ router.get("/direct-income", authMiddleware, IncomeController.getDirectIncome);
 router.get("/level-income", authMiddleware, IncomeController.getLevelIncome);
 router.get("/Roi-income", authMiddleware, IncomeController.getRoiIncome);
 
+const { createWithdrawal } = require('../controllers/withdrawController'); // Import the controller function
 
+// Define the POST route for creating a withdrawal
+router.post('/withdrawal', createWithdrawal);
 // Mount the router on /api/auth so that /register becomes /api/auth/register
 const initWebRouter = (app) => {
     app.use('/api/auth', router);
