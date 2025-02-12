@@ -47,35 +47,35 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // API endpoint jahan data ko save karna hai
-const apiUrl = 'http://localhost:3002/api3/auth/withdrawal';
+// const apiUrl = 'http://localhost:3002/api/auth/withdrawal';
 
-// POST route for saving address and amount
-app.post('/withdrawal', (req, res) => {
-  const { address, amount } = req.body; // Request body se address aur amount nikaal rahe hain
+// // POST route for saving address and amount
+// app.post('/withdrawal', (req, res) => {
+//   const {amount } = req.body; // Request body se address aur amount nikaal rahe hain
 
-  // Data jo API ko bhejna hai
-  const data = {
-    address: address,
-    amount: amount
-  };
+//   // Data jo API ko bhejna hai
+//   const data = {
+    
+//     amount: amount
+//   };
 
-  // Axios POST request to external API
-  axios.post(apiUrl, data)
-    .then((response) => {
-      // Agar data successfully save ho jaata hai
-      res.status(200).json({
-        message: 'Data saved successfully',
-        data: response.data
-      });
-    })
-    .catch((error) => {
-      // Agar error hota hai
-      res.status(500).json({
-        message: 'Error saving data',
-        error: error.message
-      });
-    });
-});
+//   // Axios POST request to external API
+//   axios.post(apiUrl, data)
+//     .then((response) => {
+//       // Agar data successfully save ho jaata hai
+//       res.status(200).json({
+//         message: 'Data saved successfully',
+//         data: response.data
+//       });
+//     })
+//     .catch((error) => {
+//       // Agar error hota hai
+//       res.status(500).json({
+//         message: 'Error saving data',
+//         error: error.message
+//       });
+//     });
+// });
 
 // Default Route
 app.get("/", (req, res) => {

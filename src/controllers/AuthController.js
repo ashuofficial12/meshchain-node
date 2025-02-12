@@ -25,7 +25,6 @@ const register = async (req, res) => {
         if (existingUser.length > 0) {
             return res.status(400).json({ error: "Email or Phone already exists!" });
         }
-
         const [sponsorUser] = await db.execute(
             "SELECT * FROM users WHERE username = ?", [sponsor]
         );
@@ -245,6 +244,37 @@ const getUserProfile = async (req, res) => {
     }
 };
 
+// ✅ Get User Header
+const getUserHeader = async (req, res) => {
+    try {
+        // ✅ Debug JWT User Data
+        console.log("Extracted user object:", req.user);
+
+        const userId = req.user?.userId; // ✅ Extract User ID from JWT Token
+        if (!userId) {
+            return res.status(400).json({ message: "User ID missing in token" });
+        }
+
+        console.log("Extracted userId:", userId);
+
+        // ✅ Run Query & Debug Output
+        const [rows] = await db.query("SELECT id, name, username FROM users WHERE id = ?", [userId]);
+
+        console.log("Query Result:", rows);
+
+        if (!rows.length) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.json(rows[0]); // ✅ Return user data
+
+    } catch (error) {
+        console.error("Error fetching user:", error.message);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+
 // ✅ Update User Name
 const updateUserProfile = async (req, res) => {
     try {
@@ -278,5 +308,5 @@ const updateUserProfile = async (req, res) => {
 
 // module.exports = { logout };
 
-module.exports = { login, register, logout, sendCode, resetPassword, updateUserProfile,getUserProfile};
+module.exports = { login, register, logout, sendCode, resetPassword, updateUserProfile,getUserProfile,getUserHeader};
 
