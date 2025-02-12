@@ -1,10 +1,8 @@
 const db = require("../config/connectDB");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemailer = require('nodemailer');
-const bodyParser = require("body-parser");
-const express = require("express");
-const cors = require("cors");
+const User = require("../models/User"); // User Model Import Karein
+
 
 const app = express();
 app.use(cors());
