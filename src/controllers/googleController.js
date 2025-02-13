@@ -1,6 +1,6 @@
 const { OAuth2Client } = require('google-auth-library');
 const db = require("../config/connectDB");
-const { User } = require('../models/User'); // Import User model
+const { User } = require('../models'); // Import User model
 
 
 const jwt = require('jsonwebtoken');
@@ -35,6 +35,12 @@ async function verifyGoogleToken(req, res) {
       const name = payload.name || '';
 
       // Find or create the user in the database
+
+      if (!User) {
+        console.error("User model is undefined!");
+        return res.status(500).json({ error: "Internal server error" });
+    }
+
       let user = await User.findOne({ where: { google_id: googleId } });
       var d = new Date();
       const username = generateUsername();

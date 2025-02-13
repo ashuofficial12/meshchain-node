@@ -3,6 +3,7 @@ let router = express.Router();
 const AuthController = require("../controllers/AuthController");
 const IncomeController = require("../controllers/incomeController");
 const TelegramController = require("../controllers/TelegramController");
+const withdrawalController = require("../controllers/withdrawalController");
 
 const authMiddleware = require("../middleware/authMiddleware"); // JWT Auth Middleware
 
