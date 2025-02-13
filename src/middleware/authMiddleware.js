@@ -3,24 +3,26 @@ const User = require("../models/User");
 
 const authMiddleware = async (req, res, next) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1]; // "Bearer TOKEN"
+        console.log("Authorization Header:", req.headers.authorization);
+        const token = req.headers.authorization?.split(" ")[1]; 
         if (!token) {
             return res.status(401).json({ error: "Unauthorized: Token missing" });
         }
 
-
-        // Token Verify Karna
+        console.log("JWT Secret:", process.env.JWT_SECRET);
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        // User Fetch Karna
+        console.log("Decoded Token:", decoded);
+
         const user = await User.findByPk(decoded.id);
+        console.log("User Found:", user);
         if (!user) {
             return res.status(401).json({ error: "Unauthorized: User not found" });
         }
 
-        req.user = user; // ✅ `req.user` me login user store karein
+        req.user = user;
         next();
     } catch (error) {
+        console.error("Auth Middleware Error:", error.message);
         return res.status(401).json({ error: "Invalid token", details: error.message });
     }
 };
