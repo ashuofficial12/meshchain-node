@@ -1,6 +1,6 @@
 const { OAuth2Client } = require('google-auth-library');
 const db = require("../config/connectDB");
-const { User } = require('../models'); // Import User model
+const { User } = require('../models/User'); // Import User model
 
 
 const jwt = require('jsonwebtoken');

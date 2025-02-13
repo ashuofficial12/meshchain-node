@@ -2,6 +2,7 @@ const express = require('express');
 let router = express.Router();
 const AuthController = require("../controllers/AuthController");
 const IncomeController = require("../controllers/incomeController");
+const withdrawalController = require("../controllers/withdrawalController");
 
 const authMiddleware = require("../middleware/authMiddleware"); // JWT Auth Middleware
 
@@ -15,9 +16,9 @@ const teamController = require('../controllers/teamController');
 
 router.post('/google', googleController.verifyGoogleToken);
 router.post('/register', AuthController.register);
-router.get("/direct-income", authMiddleware, IncomeController.getDirectIncome);
-router.get("/level-income", authMiddleware, IncomeController.getLevelIncome);
-router.get("/Roi-income", authMiddleware, IncomeController.getRoiIncome);
+router.post('/withdrawal', authMiddleware, withdrawalController.createWithdrawal);
+router.get('/withdrawals', authMiddleware, withdrawalController.getWithdrawalHistory);
+
 router.post("/team",teamController.getTeam);
 
 
