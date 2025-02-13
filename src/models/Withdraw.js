@@ -2,13 +2,22 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/connectDB');
 
 const Withdraw = sequelize.define('Withdraw', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    user_id_fk: { type: DataTypes.INTEGER, allowNull: false },
-    amount: { type: DataTypes.FLOAT, allowNull: false },
-    status: { type: DataTypes.ENUM('Approved', 'Pending', 'Rejected'), defaultValue: 'Pending' },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    address: { 
+        type: DataTypes.FLOAT, 
+        allowNull: false 
+    },
+    amount: { 
+        type: DataTypes.FLOAT, 
+        allowNull: false 
+    },
+ 
 }, {
     tableName: 'withdraws',
-    timestamps: false
+    timestamps: true // This will add createdAt and updatedAt columns
 });
 
 module.exports = Withdraw;
