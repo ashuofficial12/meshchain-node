@@ -20,6 +20,9 @@ router.post('/withdrawal', authMiddleware, withdrawalController.createWithdrawal
 router.get('/withdrawals', authMiddleware, withdrawalController.getWithdrawalHistory);
 
 router.post("/team",teamController.getTeam);
+router.post('/list',  teamController.list);
+
+
 
 
 
