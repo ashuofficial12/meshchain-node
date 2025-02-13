@@ -9,10 +9,14 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ error: "Unauthorized: Token missing" });
         }
 
-        console.log("JWT Secret:", process.env.JWT_SECRET);
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("Decoded Token:", decoded);
 
+
+        // Token Verify Karna
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+       
+        
+        // User Fetch Karna
         const user = await User.findByPk(decoded.id);
         console.log("User Found:", user);
         if (!user) {
